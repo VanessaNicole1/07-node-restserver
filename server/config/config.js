@@ -22,6 +22,6 @@ if (process.env.NODE_ENV === 'dev') {
 
 } else {
 
-    urlDB = 'mongodb+srv://VanessaIniguez:MwyHxPabQWUeiqqZ@cluster0-vnya1.mongodb.net/cafe?retryWrites=true&w=majority'
+    urlDB = process.env.MONGO_URI
 }
 process.env.URLDB = urlDB;
