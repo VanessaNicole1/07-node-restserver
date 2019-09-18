@@ -3,11 +3,18 @@ const bcrypt = require('bcrypt');
 const _ = require('underscore');
 const Usuario = require('../models/usuario');
 
+const { verificarToken, verifica_AdminRole } = require('../middlewares/autenticacion');
+
 
 const app = express();
 
 
-app.get('/usuario', function(req, res) {
+/*====================================
+El usuario que se encuentra en req.usuario es el usuario,
+ que nosotros enviamos al momento de crear el token                                 
+======================================*/
+
+app.get('/usuario', [verificarToken], (req, res) => {
 
     let desde = req.query.desde || 0;
     desde = Number(desde);
@@ -42,7 +49,7 @@ app.get('/usuario', function(req, res) {
 
 });
 
-app.post('/usuario', function(req, res) {
+app.post('/usuario', [verificarToken, verifica_AdminRole], function(req, res) {
 
     let body = req.body;
 
@@ -75,7 +82,7 @@ app.post('/usuario', function(req, res) {
 
 });
 
-app.put('/usuario/:id', function(req, res) {
+app.put('/usuario/:id', [verificarToken, verifica_AdminRole], function(req, res) {
 
     let id = req.params.id;
 
@@ -99,6 +106,38 @@ app.put('/usuario/:id', function(req, res) {
     });
 
 });
+
+
+
+
+/*====================================
+Eliminar logicamente                                 
+======================================*/
+app.delete('/usuario/:id', [verificarToken, verifica_AdminRole], function(req, res) {
+
+    let id = req.params.id;
+
+    Usuario.findByIdAndUpdate(id, { estado: false }, { new: true }, (error, usuarioEliminado) => {
+
+        if (error) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'No se pudo borrar el usuario',
+                error
+            });
+        }
+
+        res.json({
+            ok: true,
+            usuario: usuarioEliminado
+        });
+
+    });
+
+});
+
+
+
 
 /*====================================
 Eliminado fisicamente                                 
@@ -136,31 +175,7 @@ Eliminado fisicamente
 // });
 
 
-/*====================================
-Eliminar logicamente                                 
-======================================*/
-app.delete('/usuario/:id', function(req, res) {
 
-    let id = req.params.id;
-
-    Usuario.findByIdAndUpdate(id, { estado: false }, { new: true }, (error, usuarioEliminado) => {
-
-        if (error) {
-            return res.status(400).json({
-                ok: false,
-                mensaje: 'No se pudo borrar el usuario',
-                error
-            });
-        }
-
-        res.json({
-            ok: true,
-            usuario: usuarioEliminado
-        });
-
-    });
-
-});
 
 
 module.exports = app;
