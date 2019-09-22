@@ -27,9 +27,6 @@ app.use(require('./routes/index'));
 
 
 
-
-
-
 /*====================================
 CONECTAR CON LA BASE DE DATOS             
 ======================================*/
