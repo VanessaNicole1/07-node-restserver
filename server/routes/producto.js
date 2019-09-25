@@ -181,7 +181,7 @@ app.get('/productos/buscar/:termino', [verificarToken], (request, response) => {
     let termino = request.params.termino;
 
     /**
-     * Expresion regular
+     * Expresion regular, la i significa que sea insensible a las mayusculas y minusculas
      */
 
     let regex = new RegExp(termino, 'i');
